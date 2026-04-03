@@ -6,6 +6,7 @@ public class BossExplosion : MonoBehaviour
 {
     [SerializeField] GameObject explosion; //爆発エフェクト
     [SerializeField] GameObject boss; //ボス
+    
     private bool isExplode = false; //爆発を行うためのフラグ
 
     public bool IsExplode { get => isExplode; set => isExplode = value; }
@@ -15,7 +16,7 @@ public class BossExplosion : MonoBehaviour
         //ボスが消えた際に爆発演出を再生させる
         if(boss == null)
         {
-            if (IsExplode == false)
+            if(IsExplode == false) //ローカルなのになぜわざわざプロパティにしているのはなぜ？？
             {
                 Instantiate(explosion,transform.position,Quaternion.identity);
                 AudioManager.Instance.PlaySE(SEManager.SEType.EnemyExplode);

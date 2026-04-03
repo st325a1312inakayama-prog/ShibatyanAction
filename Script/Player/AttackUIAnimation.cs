@@ -14,14 +14,13 @@ public class AttackUIAnimation : MonoBehaviour
 
     float maxPadding = 100f; //ゲージの最大値
 
-    Coroutine fireACoroutine;　//攻撃Aのコルーチン
-    Coroutine fireBCoroutine;　//攻撃Bのコルーチン
+    Coroutine fireACoroutine;//攻撃Aのコルーチン
+    Coroutine fireBCoroutine;//攻撃Bのコルーチン
 
     //攻撃Aのゲージ回復関数
     public void StartFireA(float duration)
     {
-        if (fireACoroutine != null)
-            StopCoroutine(fireACoroutine);
+        if (fireACoroutine != null) StopCoroutine(fireACoroutine);
 
         fireACoroutine = StartCoroutine(GaugeAnimation(fireAMask, duration));
     }

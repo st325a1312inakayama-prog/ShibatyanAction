@@ -5,13 +5,15 @@ using UnityEngine;
 /// </summary>
 public class BGMManager : MonoBehaviour
 {
-    [SerializeField] AudioSource bgmSource; //BGM再生用のAudioSource
+    [SerializeField] AudioSource audioSource; 
 
-    [Header("BGM Clips")]
-    [SerializeField] AudioClip startSceneBGM; //スタート時に流すBGM
-    [SerializeField] AudioClip selectSceneBGM; //選択画面のBGM
-    [SerializeField] AudioClip clearBGM; //クリア時に流すBGM
-    [SerializeField] AudioClip gameOverBGM; //ゲームオーバー時に流すBGM
+    [Header("BGM Clips")] //=> bgm系はリストとかにして、Inspector上で増やせるようにした方がいいと思います 
+    [SerializeField] AudioClip startSceneBGM; 
+    [SerializeField] AudioClip selectSceneBGM; 
+    [SerializeField] AudioClip clearBGM; 
+    [SerializeField] AudioClip gameOverBGM; 
+
+    //拡張性がありません。今は1個でも、将来増える可能性があるなら配列とかにしてください
     [SerializeField] AudioClip stage1BGM; //ステージ1で流すBGM
     [SerializeField] AudioClip boss1BGM; //ボス戦で流すBGM
 
@@ -36,11 +38,11 @@ public class BGMManager : MonoBehaviour
         if (clip == null) return;
 
         // すでに同じ曲が流れている場合は再生しない
-        if (bgmSource.clip == clip) return;
+        if (audioSource.clip == clip) return;
 
-        bgmSource.clip = clip;
-        bgmSource.loop = true;
-        bgmSource.Play();
+        audioSource.clip = clip;
+        audioSource.loop = true;
+        audioSource.Play();
     }
 
     // BGMTypeに応じて対応するAudioClipを返す
@@ -61,17 +63,17 @@ public class BGMManager : MonoBehaviour
     public void StopWithFade()
     {
         // 再生されていなければ何もしない
-        if (!bgmSource.isPlaying) return;
+        if (!audioSource.isPlaying) return;
 
         // 途中でフェードしてたら止める
         fadeTween?.Kill();
 
-        fadeTween = bgmSource
+        fadeTween = audioSource
             .DOFade(0f, fadeOutTime)
             .OnComplete(() =>
             {
-                bgmSource.Stop();
-                bgmSource.volume = 1f; // 次回再生用に戻す
+                audioSource.Stop();
+                audioSource.volume = 1f; // 次回再生用に戻す
             });
     }
 }

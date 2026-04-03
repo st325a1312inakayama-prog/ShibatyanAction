@@ -8,16 +8,29 @@ public class Boss1Action : MonoBehaviour
     [SerializeField] Animator animator; //ボスのアニメーション
 
     #region 攻撃
-    [Header("弾幕1"), SerializeField] GameObject bullet;
-    [Header("弾幕2"), SerializeField] GameObject bullet2;
-    [Header("弾幕発射ポイント1"), SerializeField] Transform attackPoint1;
-    [Header("弾幕発射ポイント2"), SerializeField] Transform attackPoint2;
-    bool isAttack1Running = false; //Attack1を毎フレーム呼び出させないためのフラグ
-    bool isAttack2Running = false; //Attack2を毎フレーム呼び出させないためのフラグ
-    bool isDeadRunning = false; //Deadを毎フレーム呼び出さないためのフラグ
+    //[Header("弾幕1"), SerializeField] GameObject bullet;
+    //[Header("弾幕2"), SerializeField] GameObject bullet2;
+
+    [Header("弾幕"), SerializeField]
+    GameObject[] bullets; //弾幕のプレハブをまとめた配列（Inspector上で弾幕を増やせるようにするため）
+
+    //[Header("弾幕発射ポイント1"), SerializeField] Transform attackPoint1;
+    //[Header("弾幕発射ポイント2"), SerializeField] Transform attackPoint2;
+
+    [Header("発射ポイント"), SerializeField]
+    Transform[] attackPoints; //弾幕発射ポイントをまとめた配列（Inspector上で増やせるようにするため）
+
+    [Header("攻撃中フラグ"), SerializeField]
+    bool[] isAttacking; //攻撃中かどうかのフラグをまとめた配列（Inspector上で増やせるようにするため）
+    
+    //bool isAttack1Running = false; //Attack1を毎フレーム呼び出させないためのフラグ
+    //bool isAttack2Running = false; //Attack2を毎フレーム呼び出させないためのフラグ
+    bool isDead = false; //Deadを毎フレーム呼び出さないためのフラグ
+
     #endregion
+
     #region プレイヤーの位置の情報と回転
-    [SerializeField] Transform player; //プレイヤーのTransform
+    [SerializeField] Transform playerTransform; //プレイヤーのTransform
     [SerializeField] float rotateSpeed = 5f; //回転のスピード
     #endregion
 
@@ -40,7 +53,7 @@ public class Boss1Action : MonoBehaviour
     }
 
     // Stop が多重実行されないためのフラグ
-    bool isStopRunning = false;
+    bool isStop = false;
 
     private void Start()
     {
@@ -49,15 +62,16 @@ public class Boss1Action : MonoBehaviour
     }
 
     //ストップ状態での行動
-    public void EnterStop()
+    public void Stop()
     {
         // Stop中なら何もしない
-        if (isStopRunning) return;
+        if (isStop) return;
 
-        isStopRunning = true;
+        isStop = true;
 
         //ストップ状態のアニメーションを再生
         animator.SetBool("isStop", true);
+
         StartCoroutine(StopCoroutine());
     }
 
@@ -69,23 +83,25 @@ public class Boss1Action : MonoBehaviour
         yield return new WaitForSeconds(stopTime);
 
         animator.SetBool("isStop", false);
-        isStopRunning = false;
+
+        isStop = false;
 
         //Stop終了時に1回だけ抽選
         SetRandomAttackState();
     }
 
     //Attack1状態での行動
-    public void EnterAttack1()
+    public void Attack1()
     {
         if (CurrentState != BossState.Attack1) return;
 
         //Attack1中なら何もしない
-        if (isAttack1Running) return;
+        if (isAttacking[0]) return;
 
-        isAttack1Running = true;
+        isAttacking[0] = true;
         //Attack1状態のアニメーションを再生
         animator.SetBool("isAttack1", true);
+
         StartCoroutine(Attack1Coroutine());
     }
 
@@ -100,26 +116,26 @@ public class Boss1Action : MonoBehaviour
         yield return new WaitForSeconds(delaytime);
 
         // 弾幕8発
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++) //８マジックナンバー発見！変数化してください
         {
             Instantiate(bullet, attackPoint1.position, attackPoint1.rotation);
             yield return new WaitForSeconds(bulletInterval);
         }
-        isAttack1Running = false;
+        isAttacking[0] = false;
         animator.SetBool("isAttack1", false);
         //終わるとStopに戻る
         CurrentState = BossState.Stop;
     }
 
     //Attack2状態での行動
-    public void EnterAttack2()
+    public void Attack2()
     {
         if (CurrentState != BossState.Attack2) return;
 
         //Attack2中なら何もしない
-        if (isAttack2Running) return;
+        if (isAttacking[1]) return;
 
-        isAttack2Running = true;
+        isAttacking[1] = true;
         //Attack2のアニメーションを再生
         animator.SetBool("isAttack2", true);
         StartCoroutine(Attack2Coroutine());
@@ -143,30 +159,30 @@ public class Boss1Action : MonoBehaviour
         float angle = startAngle;
 
         //発射するごとに-24度ずつ角度が小さくなる
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 15; i++) //１５マジックナンバー発見！変数化してください
         {
             Quaternion rot = baseRotation * Quaternion.Euler(0, angle, 0);
             Instantiate(bullet2, attackPoint2.position, rot);
 
-            angle -= 24f;
+            angle -= 24f; //24マジックナンバー発見！変数化してください
             yield return new WaitForSeconds(bulletInterval);
         }
 
-        isAttack2Running = false;
+        isAttacking[1] = false;
         animator.SetBool("isAttack2", false);
         //終わるとStopに戻る
         CurrentState = BossState.Stop;
     }
 
     //Dead状態の行動
-    public void EnterDead()
+    public void StartDeadProcess()
     {
         if (CurrentState != BossState.Dead) return;
 
         //Dead中なら何もしない
-        if (isDeadRunning) return;
+        if (isDead) return;
 
-        isDeadRunning = true;
+        isDead = true;
         StartCoroutine(DeadSequence());
     }
     IEnumerator DeadSequence()
@@ -198,20 +214,20 @@ public class Boss1Action : MonoBehaviour
     void SetRandomAttackState()
     {
         //半々の確立で抽選される
-        CurrentState = (Random.Range(0, 2) == 0)
+        CurrentState = (Random.Range(0, 2) == 0) //配列を使う場合の書き方に改善！
             ? BossState.Attack1
             : BossState.Attack2;
 
         Debug.Log("Next State : " + CurrentState);
     }
-    public void SetDeadState()
+    public void SetDeadState() //他のステート変更にも対応できるように、引数でステートを渡す形にした方がいいと思います
     {
         //状態をDeadにする
         CurrentState = BossState.Dead;
     }
 
     //Stop状態中Playerに集中する
-    public void LookPlayer()
+    public void FocusOnPlayer()
     {
         if (player == null) return;
 

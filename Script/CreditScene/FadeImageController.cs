@@ -1,4 +1,5 @@
 using UnityEngine;
+
 /// <summary>
 /// スタート画面のフェードイン演出を行うためのクラス
 /// </summary>
@@ -17,6 +18,7 @@ public class FadeImageController : MonoBehaviour
 
     public void OnClick()
     {
+        //連打防止？？
         if(!clicked)
         {
             //効果音

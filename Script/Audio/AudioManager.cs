@@ -1,13 +1,13 @@
 using UnityEngine;
 using static BGMManager;
 using static SEManager;
+
 /// <summary>
 /// ゲーム全体のBGMとSEを管理するオーディオの窓口クラス(このクラス経由で他のスクリプトで音を鳴らせるようにする)
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;//どこからでも参照できるAudioManagerの実体
-
+    public static AudioManager Instance; //どこからでも参照できるAudioManagerの実体
     [SerializeField] BGMManager bgmManager;//BGM再生管理クラス
     [SerializeField] SEManager seManager; //SE再生管理クラス
 

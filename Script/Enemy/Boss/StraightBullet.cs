@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+
 /// <summary>
 /// まっすぐ飛ぶ弾幕のクラス
 /// </summary>
@@ -8,7 +9,7 @@ public class StraightBullet : MonoBehaviour
     [SerializeField]float speed = 5.0f; //弾幕のスピード
     [SerializeField]float time = 3.0f; //弾幕が消える処理に移るまでの時間
     bool dissappear_Bullet = false; //弾幕が消え始めるためのフラグ
-    bool isScaling = false;   // 多重実行防止
+    bool isDissappearing = false;   // 多重実行防止
 
     private void Start()
     {
@@ -41,10 +42,10 @@ public class StraightBullet : MonoBehaviour
     //弾を消す関数
     void StartDisappear()
     {
-        if (isScaling) return;
+        if (isDissappearing) return;
 
         dissappear_Bullet = true;
-        isScaling = true;
+        isDissappearing = true;
         StartCoroutine(ScaleDownAndDestroy());
     }
 

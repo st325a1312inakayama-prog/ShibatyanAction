@@ -28,19 +28,20 @@ public class Boss1Controller : MonoBehaviour
         switch (action.CurrentState)
         {
             case BossState.Stop:
-                action.EnterStop();
-                action.LookPlayer();
+                action.Stop();
+                action.FocusOnPlayer();
                 break;
 
             case BossState.Attack1:
-                action.EnterAttack1();
+                action.Attack1(); //各攻撃に特別な名前を付けた方が読みやすいし、わかりやすいと思います（例：ShootBulletAttackとか）
                 break;
 
             case BossState.Attack2:
-                action.EnterAttack2();
+                action.Attack2(); 
                 break;
+                
             case BossState.Dead:
-                action.EnterDead();
+                action.Dead();
                 break;
         }
     }
