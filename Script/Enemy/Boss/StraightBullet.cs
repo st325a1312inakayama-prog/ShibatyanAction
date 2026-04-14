@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-
 /// <summary>
 /// まっすぐ飛ぶ弾幕のクラス
 /// </summary>

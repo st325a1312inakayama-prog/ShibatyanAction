@@ -14,8 +14,8 @@ public class AttackUIAnimation : MonoBehaviour
 
     float maxPadding = 100f; //ゲージの最大値
 
-    Coroutine fireACoroutine;//攻撃Aのコルーチン
-    Coroutine fireBCoroutine;//攻撃Bのコルーチン
+    Coroutine fireACoroutine;　//攻撃Aのコルーチン
+    Coroutine fireBCoroutine;　//攻撃Bのコルーチン
 
     //攻撃Aのゲージ回復関数
     public void StartFireA(float duration)
@@ -28,8 +28,7 @@ public class AttackUIAnimation : MonoBehaviour
     //攻撃Bのゲージ回復関数
     public void StartFireB(float duration)
     {
-        if (fireBCoroutine != null)
-            StopCoroutine(fireBCoroutine);
+        if (fireBCoroutine != null) StopCoroutine(fireBCoroutine);
 
         fireBCoroutine = StartCoroutine(GaugeAnimation(fireBMask, duration));
     }

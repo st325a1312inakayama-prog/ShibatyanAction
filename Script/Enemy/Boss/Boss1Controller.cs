@@ -33,15 +33,14 @@ public class Boss1Controller : MonoBehaviour
                 break;
 
             case BossState.Attack1:
-                action.Attack1(); //各攻撃に特別な名前を付けた方が読みやすいし、わかりやすいと思います（例：ShootBulletAttackとか）
+                action.Attack1();
                 break;
 
             case BossState.Attack2:
-                action.Attack2(); 
+                action.Attack2();
                 break;
-                
             case BossState.Dead:
-                action.Dead();
+                action.StartDeadProcess();
                 break;
         }
     }

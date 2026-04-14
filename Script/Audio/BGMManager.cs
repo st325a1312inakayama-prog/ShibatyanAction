@@ -5,17 +5,10 @@ using UnityEngine;
 /// </summary>
 public class BGMManager : MonoBehaviour
 {
-    [SerializeField] AudioSource audioSource; 
+    [SerializeField] AudioSource audioSource; //BGM再生用のAudioSource
 
-    [Header("BGM Clips")] //=> bgm系はリストとかにして、Inspector上で増やせるようにした方がいいと思います 
-    [SerializeField] AudioClip startSceneBGM; 
-    [SerializeField] AudioClip selectSceneBGM; 
-    [SerializeField] AudioClip clearBGM; 
-    [SerializeField] AudioClip gameOverBGM; 
-
-    //拡張性がありません。今は1個でも、将来増える可能性があるなら配列とかにしてください
-    [SerializeField] AudioClip stage1BGM; //ステージ1で流すBGM
-    [SerializeField] AudioClip boss1BGM; //ボス戦で流すBGM
+    [Header("BGM Clips")]
+    [SerializeField] AudioClip[] bgmList;
 
     [SerializeField] float fadeOutTime = 1.0f; //曲のフェードアウトにかかる時間
 
@@ -50,11 +43,11 @@ public class BGMManager : MonoBehaviour
     {
         switch (type)
         {
-            case BGMType.Start: return startSceneBGM;
-            case BGMType.Select: return selectSceneBGM;
-            case BGMType.Clear: return clearBGM;
-            case BGMType.Stage1: return stage1BGM;
-            case BGMType.Boss1: return boss1BGM;
+            case BGMType.Start: return bgmList[0];
+            case BGMType.Select: return bgmList[1];
+            case BGMType.Clear: return bgmList[2];
+            case BGMType.Stage1: return bgmList[3];
+            case BGMType.Boss1: return bgmList[4];
             default: return null;
         }
     }

@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
-
 /// <summary>
 /// スタート画面のフェードイン・フェードアウトのアニメーション用クラス
 /// </summary>

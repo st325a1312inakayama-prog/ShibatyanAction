@@ -8,27 +8,12 @@ public class Boss1Action : MonoBehaviour
     [SerializeField] Animator animator; //ボスのアニメーション
 
     #region 攻撃
-    //[Header("弾幕1"), SerializeField] GameObject bullet;
-    //[Header("弾幕2"), SerializeField] GameObject bullet2;
-
-    [Header("弾幕"), SerializeField]
-    GameObject[] bullets; //弾幕のプレハブをまとめた配列（Inspector上で弾幕を増やせるようにするため）
-
-    //[Header("弾幕発射ポイント1"), SerializeField] Transform attackPoint1;
-    //[Header("弾幕発射ポイント2"), SerializeField] Transform attackPoint2;
-
-    [Header("発射ポイント"), SerializeField]
-    Transform[] attackPoints; //弾幕発射ポイントをまとめた配列（Inspector上で増やせるようにするため）
-
-    [Header("攻撃中フラグ"), SerializeField]
-    bool[] isAttacking; //攻撃中かどうかのフラグをまとめた配列（Inspector上で増やせるようにするため）
-    
-    //bool isAttack1Running = false; //Attack1を毎フレーム呼び出させないためのフラグ
-    //bool isAttack2Running = false; //Attack2を毎フレーム呼び出させないためのフラグ
+    [Header("弾幕"), SerializeField] GameObject[] bullet;
+    [Header("弾幕発射ポイント"), SerializeField] Transform[] attackPoint;
+    [Header("弾幕発射カウント"), SerializeField] int[] bulletCount;
+    bool[] isAttacking; //Attackを毎フレーム呼び出させないためのフラグ
     bool isDead = false; //Deadを毎フレーム呼び出さないためのフラグ
-
     #endregion
-
     #region プレイヤーの位置の情報と回転
     [SerializeField] Transform playerTransform; //プレイヤーのTransform
     [SerializeField] float rotateSpeed = 5f; //回転のスピード
@@ -71,7 +56,6 @@ public class Boss1Action : MonoBehaviour
 
         //ストップ状態のアニメーションを再生
         animator.SetBool("isStop", true);
-
         StartCoroutine(StopCoroutine());
     }
 
@@ -83,7 +67,6 @@ public class Boss1Action : MonoBehaviour
         yield return new WaitForSeconds(stopTime);
 
         animator.SetBool("isStop", false);
-
         isStop = false;
 
         //Stop終了時に1回だけ抽選
@@ -101,7 +84,6 @@ public class Boss1Action : MonoBehaviour
         isAttacking[0] = true;
         //Attack1状態のアニメーションを再生
         animator.SetBool("isAttack1", true);
-
         StartCoroutine(Attack1Coroutine());
     }
 
@@ -116,15 +98,15 @@ public class Boss1Action : MonoBehaviour
         yield return new WaitForSeconds(delaytime);
 
         // 弾幕8発
-        for (int i = 0; i < 8; i++) //８マジックナンバー発見！変数化してください
+        for (int i = 0; i < bulletCount[0]; i++)
         {
-            Instantiate(bullet, attackPoint1.position, attackPoint1.rotation);
+            Instantiate(bullet[0], attackPoint[0].position, attackPoint[0].rotation);
             yield return new WaitForSeconds(bulletInterval);
         }
         isAttacking[0] = false;
         animator.SetBool("isAttack1", false);
         //終わるとStopに戻る
-        CurrentState = BossState.Stop;
+        SetStopState();
     }
 
     //Attack2状態での行動
@@ -154,24 +136,26 @@ public class Boss1Action : MonoBehaviour
         // 一発目を必ず「横」から出す
         float startAngle = 90f;
 
+        float bulletAngle = 24f;
+
         yield return new WaitForSeconds(delaytime);
 
         float angle = startAngle;
 
         //発射するごとに-24度ずつ角度が小さくなる
-        for (int i = 0; i < 15; i++) //１５マジックナンバー発見！変数化してください
+        for (int i = 0; i < bulletCount[1]; i++)
         {
             Quaternion rot = baseRotation * Quaternion.Euler(0, angle, 0);
-            Instantiate(bullet2, attackPoint2.position, rot);
+            Instantiate(bullet[1], attackPoint[1].position, rot);
 
-            angle -= 24f; //24マジックナンバー発見！変数化してください
+            angle -= bulletAngle;
             yield return new WaitForSeconds(bulletInterval);
         }
 
         isAttacking[1] = false;
         animator.SetBool("isAttack2", false);
         //終わるとStopに戻る
-        CurrentState = BossState.Stop;
+        SetStopState();
     }
 
     //Dead状態の行動
@@ -213,25 +197,39 @@ public class Boss1Action : MonoBehaviour
     //Attack1とAttack2をランダムに抽選する
     void SetRandomAttackState()
     {
-        //半々の確立で抽選される
-        CurrentState = (Random.Range(0, 2) == 0) //配列を使う場合の書き方に改善！
-            ? BossState.Attack1
-            : BossState.Attack2;
+        BossState[] attackPatterns = { BossState.Attack1, BossState.Attack2 };
 
-        Debug.Log("Next State : " + CurrentState);
+        //ランダム抽選
+        int randomIndex = Random.Range(0, attackPatterns.Length);
+        CurrentState = attackPatterns[randomIndex];
     }
-    public void SetDeadState() //他のステート変更にも対応できるように、引数でステートを渡す形にした方がいいと思います
+    public void SetDeadState()
     {
         //状態をDeadにする
         CurrentState = BossState.Dead;
+    }
+    public void SetAttack1State()
+    {
+        //状態をAttack1にする
+        CurrentState = BossState.Attack1;
+    }
+    public void SetAttack2State()
+    {
+        //状態をAttack2にする
+        CurrentState = BossState.Attack2;
+    }
+    public void SetStopState()
+    {
+        //状態をStopにする
+        CurrentState = BossState.Stop;
     }
 
     //Stop状態中Playerに集中する
     public void FocusOnPlayer()
     {
-        if (player == null) return;
+        if (playerTransform == null) return;
 
-        Vector3 dir = player.position - transform.position;
+        Vector3 dir = playerTransform.position - transform.position;
         dir.y = 0f; // Y軸は回転させない（3D用）
 
         Quaternion targetRot = Quaternion.LookRotation(dir);
